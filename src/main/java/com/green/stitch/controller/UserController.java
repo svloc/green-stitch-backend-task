@@ -11,7 +11,7 @@ public class UserController {
     
     // test kar ke dekho chal rah hai ky
     @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping("/")
+    @GetMapping("/test")
     public String AdminTest() {
         return "User hai mai..";
     }

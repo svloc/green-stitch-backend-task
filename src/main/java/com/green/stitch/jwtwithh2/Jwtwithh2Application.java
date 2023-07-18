@@ -2,11 +2,12 @@ package com.green.stitch.jwtwithh2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@EnableJpaRepositories
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+@EnableMongoRepositories({"com.green.stitch.*"})
+@SpringBootApplication
+@ComponentScan({"com.green.stitch.*"})
 public class Jwtwithh2Application {
 
 	public static void main(String[] args) {

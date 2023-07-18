@@ -13,7 +13,7 @@ public class AdminController {
     
 	// test kar ke dekho chal rah hai ky
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@GetMapping("/")
+	@GetMapping("/test")
 	public String AdminTest(){
 		return "Admin hai mai..";
 	}

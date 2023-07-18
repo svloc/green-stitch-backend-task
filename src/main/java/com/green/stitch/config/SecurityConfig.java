@@ -10,7 +10,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,9 +20,8 @@ import com.green.stitch.jwt.TokenFilter;
 import com.green.stitch.service.UserDetailsServiceImpl;
 
 
-@EnableMethodSecurity
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -41,21 +39,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/app/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().and()
-                .csrf().disable()
-                .userDetailsService(userDetailsServiceImpl)
-                .exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> response
-                        .sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()))
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authorizeHttpRequests().antMatchers("/app/**").permitAll().anyRequest()
+				.authenticated().and()
+				.formLogin().and().csrf().disable()
+				.userDetailsService(userDetailsServiceImpl).exceptionHandling()
+				.authenticationEntryPoint((request, response, authException) -> response
+						.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()))
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+		http.authenticationProvider(authenticationProvider());
+		http.cors().and().csrf().disable();
+		http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
     }
 
     @Bean

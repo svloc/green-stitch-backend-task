@@ -1,10 +1,8 @@
 package com.green.stitch.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "USER_TBL")
+@Document(collection = "USER_TABLE")
 public class Login {
 	
 	private String username;

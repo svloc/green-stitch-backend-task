@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 // import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 // import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 // import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +48,12 @@ public class AuthController {
 	@Autowired
 	UserRepository repository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Value("${role}")
+	private String userAccess;
+
 	@PostMapping("/signin")
 	public ResponseEntity<?> validateUser(@RequestBody LoginRequest loginRequest) {
 
@@ -70,23 +79,24 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> signUpUser(@RequestBody Signup signupRequest) {
 		String email = signupRequest.getEmail();
-		String password = signupRequest.getPassword();
-
 		// Extract username from email
 		int atIndex = email.indexOf("@");
 		String username = email.substring(0, atIndex);
 		Login isExitUser = repository.findByUsername(username);
 
-		if (isExitUser == null) {
-			// Create a new User object
-			Login user = new Login();
-			user.setUsername(username);
-			user.setPassword(password);
-			// Save the user in the database
-			repository.save(user);
-			return ResponseEntity.ok("Signup successful. Username: " + username);
+		if (isExitUser != null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
+		}
+		Login user = new Login();
+		user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+		user.setRole(userAccess);
+		user.setUsername(username);
+		Login response = repository.save(user);
+		if (response != null) {
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body("User added successfully. Your Username: " + username);
 		} else {
-			return ResponseEntity.ok("Username already exists " + username);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add user");
 		}
 
 	}

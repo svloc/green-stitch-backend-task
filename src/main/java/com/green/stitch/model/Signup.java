@@ -1,7 +1,4 @@
 package com.green.stitch.model;
-import javax.persistence.Entity;
-
-@Entity
 public class Signup {
     private String email;
     private String password;

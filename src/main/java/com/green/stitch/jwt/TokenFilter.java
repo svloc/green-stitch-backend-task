@@ -1,4 +1,3 @@
-
 package com.green.stitch.jwt;
 
 import javax.servlet.FilterChain;
@@ -26,7 +25,6 @@ public class TokenFilter extends OncePerRequestFilter {
 
   @Autowired
   private UserDetailsServiceImpl userDetailsService;
-
   @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
 
